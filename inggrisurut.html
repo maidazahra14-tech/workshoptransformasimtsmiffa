@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mengurutkan Kata Bahasa Inggris</title>
+<style>
+    body {
+        background-color: #add8e6; /* biru muda */
+        font-family: Arial, sans-serif;
+        color: white;
+        text-align: center;
+        margin: 0;
+        padding: 20px;
+    }
+
+    h1 {
+        color: white;
+        background-color: #001f3f; /* biru tua */
+        padding: 10px;
+        border-radius: 8px;
+    }
+
+    #word-container {
+        background-color: #001f3f;
+        padding: 15px;
+        border-radius: 10px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        min-height: 80px;
+        margin-bottom: 20px;
+    }
+
+    .word {
+        background-color: #0074D9;
+        padding: 10px 15px;
+        border-radius: 6px;
+        cursor: grab;
+        user-select: none;
+        color: white;
+        font-weight: bold;
+    }
+
+    #drop-area {
+        width: 80%;
+        height: 1cm;
+        border: 2px dashed #001f3f;
+        background-color: #e0f0ff;
+        color: #001f3f;
+        border-radius: 5px;
+        margin: 20px auto;
+        padding: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+    }
+
+    #drop-area span {
+        background-color: #0074D9;
+        color: white;
+        margin: 2px;
+        padding: 5px 10px;
+        border-radius: 5px;
+    }
+
+    button {
+        background-color: #001f3f;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 10px;
+    }
+
+    button:hover {
+        background-color: #003366;
+    }
+
+    #feedback {
+        margin-top: 20px;
+        font-size: 18px;
+        font-weight: bold;
+    }
+</style>
+</head>
+<body>
+
+<h1>Susun Kata Bahasa Inggris dengan Benar</h1>
+
+<p>Seret kata-kata di bawah ini ke area teks agar membentuk kalimat yang benar:</p>
+
+<div id="word-container"></div>
+
+<div id="drop-area" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+
+<button onclick="checkResult()">Hasil</button>
+
+<p id="feedback"></p>
+
+<script>
+    const words = ["I", "am", "going", "to", "the", "market"];
+    const correctOrder = words.join(" ");
+    const container = document.getElementById("word-container");
+    const dropArea = document.getElementById("drop-area");
+
+    // Fungsi untuk mengacak urutan kata
+    function shuffle(array) {
+        let currentIndex = array.length, randomIndex;
+        while (currentIndex !== 0) {
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+            [array[currentIndex], array[randomIndex]] = [
+                array[randomIndex], array[currentIndex]
+            ];
+        }
+        return array;
+    }
+
+    // Tampilkan kata-kata acak
+    function displayWords() {
+        const shuffled = shuffle([...words]);
+        container.innerHTML = "";
+        shuffled.forEach(word => {
+            const span = document.createElement("span");
+            span.textContent = word;
+            span.classList.add("word");
+            span.draggable = true;
+            span.id = "word-" + word;
+            span.addEventListener("dragstart", drag);
+            container.appendChild(span);
+        });
+    }
+
+    // Drag & Drop event
+    function allowDrop(ev) {
+        ev.preventDefault();
+    }
+
+    function drag(ev) {
+        ev.dataTransfer.setData("text", ev.target.id);
+    }
+
+    function drop(ev) {
+        ev.preventDefault();
+        const data = ev.dataTransfer.getData("text");
+        const draggedElement = document.getElementById(data);
+
+        if (draggedElement) {
+            const clone = document.createElement("span");
+            clone.textContent = draggedElement.textContent;
+            dropArea.appendChild(clone);
+            draggedElement.remove(); // hapus dari sumber setelah dipindah
+        }
+    }
+
+    // Cek hasil urutan
+    function checkResult() {
+        const arranged = Array.from(dropArea.children)
+                            .map(span => span.textContent)
+                            .join(" ");
+
+        const feedback = document.getElementById("feedback");
+        if (arranged === correctOrder) {
+            feedback.textContent = "Hebat. Jawaban Anda benar!";
+            feedback.style.color = "green";
+        } else {
+            feedback.textContent = "MAAF JAWABAN Anda salah. Ulangi lagi.";
+            feedback.style.color = "red";
+        }
+    }
+
+    // Tampilkan kata pertama kali
+    displayWords();
+</script>
+
+</body>
+</html>
